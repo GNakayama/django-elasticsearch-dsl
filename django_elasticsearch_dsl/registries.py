@@ -147,17 +147,22 @@ class DocumentRegistry(object):
         """
         self.update(instance, action="delete", **kwargs)
 
-    def delete_by_id(self, ids, instance_class, **kwargs):
+    def delete_by_doc_id(self, doc_id, instance_class, **kwargs):
         if not DEDConfig.autosync_enabled():
             return
 
         if instance_class in self._models:
             for doc in self._models[instance_class]:
                 if not doc.django.ignore_signals:
-                    doc().delete(ids, **kwargs)
+                    id = doc_id.get(doc.__name__)
 
-    def generate_ids(self, instance, **kwargs):
-        ids = []
+                    if id is None:
+                        continue
+
+                    doc().delete(id, **kwargs)
+
+    def generate_doc_id(self, instance, **kwargs):
+        doc_id = {}
 
         if not DEDConfig.autosync_enabled():
             return
@@ -165,9 +170,9 @@ class DocumentRegistry(object):
         if instance.__class__ in self._models:
             for doc in self._models[instance.__class__]:
                 if not doc.django.ignore_signals:
-                    ids.append(doc().generate_id(instance))
+                    doc_id[doc.__name__] = doc().generate_id(instance)
 
-        return ids
+        return doc_id
 
     def get_related(self, instance, **kwargs):
         if not DEDConfig.autosync_enabled():

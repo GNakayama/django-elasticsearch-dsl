@@ -110,4 +110,4 @@ class CelerySignalProcessor(RealTimeSignalProcessor):
 
     def handle_delete(self, sender, instance, **kwargs):
         ct = ContentType.objects.get_for_model(instance)
-        task_handle_delete.delay(registry.generate_id(instance), ct)
+        task_handle_delete.delay(registry.generate_doc_id(instance), ct)

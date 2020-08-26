@@ -18,6 +18,6 @@ def task_handle_delete_related(pk, content_type):
     registry.update(instance)
 
 @shared_task
-def task_handle_delete(ids, content_type):
+def task_handle_delete(doc_id, content_type):
     ct_model = ContentType.objects.get_by_natural_key(*content_type)
-    registry.delete_by_id(ids, ct_model, raise_on_error=False)
+    registry.delete_by_doc_id(doc_id, ct_model, raise_on_error=False)
